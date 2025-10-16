@@ -17,18 +17,24 @@ class JwtMiddleware
             JWTAuth::parseToken()->authenticate();
         } catch (TokenExpiredException $e) {
             return response()->json([
+                 "response" => [
                 'message' => 'Token expired',
                 'status'  => 401
+                 ]
             ], 401);
         } catch (TokenInvalidException $e) {
             return response()->json([
+                 "response" => [
                 'message' => 'Token invalid',
                 'status'  => 401
+                 ]
             ], 401);
         } catch (JWTException $e) {
             return response()->json([
+                 "response" => [
                 'message' => 'Token not provided',
                 'status'  => 401
+                 ]
             ], 401);
         }
 

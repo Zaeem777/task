@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
 
 class EditUserRequest extends FormRequest
 {
@@ -13,7 +14,18 @@ class EditUserRequest extends FormRequest
     {
         return true;
     }
+     protected function failedValidation(Validator $validator)
+    {
+        $errors = $validator->errors()->all();
+        $response = response()->json([
+            "response" => [
+                "message" => $errors,
+                "status"  => 422, 
+            ]
+        ], 422); 
 
+           throw new \Illuminate\Validation\ValidationException($validator, $response);
+    }   
     /**
      * Get the validation rules that apply to the request.
      *

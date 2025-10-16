@@ -16,10 +16,10 @@ class PostsController extends Controller
      */
     public function index()
     {
-        //  return Posts::all();
         $posts = Posts::paginate(1);
-
-        return response()->json($posts);
+        return response()->json([
+             "response" => [
+            $posts],200]);
     }
 
     /**
@@ -44,51 +44,37 @@ class PostsController extends Controller
         ]
         );
 
-        return (new PostResource($post))->additional(['message' => 'Post Created Successfully']);
+        return new PostResource($post, "Post Created Successfully");
     }
 
-    /**
-     * Display the specified resource.
-     */
+
     public function show(string $id)
     {
-        return Posts::find($id);
+      
+        $post = Posts::find($id);
+        if(!$post){
+        return response()->json([
+             "response" => [
+            'message' => 'Post Not Found',
+            'status' => 404
+             ]
+        ],404); 
+    return new PostResource($post);
     }
-
-
-//    public function update(Request $request, string $id)
-// {
-
-//     $post = Posts::findOrFail($id);
-//     $name = $request->name;
-//     $description = $request->description;
-  
-//     // $validated= [$request];
-//     // $validated = $request->validate([
-//     //     'name'        => 'required|string|max:255',
-//     //     'description' => 'required|string',
-//     //     'image'       => 'required|image|mimes:jpg,jpeg,png|max:2048',
-//     //     'status'      => 'required|in:0,1',
-//     // ]);
-    
-//     if ($request->hasFile('image')) {
-//         $imagePath = $request->file('image')->store('posts_image', 'public');
-//         $validated['image_path'] = $imagePath; 
-//     }
-
-//     $post->update($validated);
-
-//     return response()->json([
-//         'message' => 'Post updated successfully',
-//         'post'    => $post
-//     ]);
-// }
-
+    }
 
 public function update(UpdatePostRequest $request, string $id)
 {
      $validated = $request->validated();
-    $post = Posts::findOrFail($id);
+    $post = Posts::find($id);
+    if(!$post){
+        return response()->json([
+             "response" => [
+            'message' => 'Post Not Found',
+            'status' => 404
+             ]
+        ],404);
+    }
 
    
     if ($request->hasFile('image')) {
@@ -98,16 +84,27 @@ public function update(UpdatePostRequest $request, string $id)
 
     $post->update($validated);
 
-    return response()->json([
-        'message' => 'Post updated successfully',
-        'post'    => $post
-    ]);
+ return new PostResource($post, "Post Updated Successfully");
+ 
 }
     public function destroy(string $id)
     {
-            $post = Posts::findOrFail($id);
+            $post = Posts::find($id);
+        if(!$post){
+        return response()->json([
+             "response" => [
+            'message' => 'Post Not Found',
+            'status' => 404
+             ]
+        ],404);
             $post->delete();
-
-        return ['message' => 'Post Deleted Successfully'];
+        
+        return [
+             "response" => [
+            'message' => 'Post Deleted Successfully',
+            'status' => 200
+             ]
+        ];
     }
+}
 }
